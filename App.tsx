@@ -287,12 +287,20 @@ const App: React.FC = () => {
     setActiveDragId(null);
   };
 
-  const confirmResetAll = () => {
-    setState({
-      sections: INITIAL_SECTIONS,
-      activeSectionId: INITIAL_SECTIONS[0].id,
-      projectName: 'Checklist Estrutural'
-    });
+  const confirmResetSection = () => {
+    setState(prev => ({
+      ...prev,
+      sections: prev.sections.map(section => {
+        if (section.id !== state.activeSectionId) return section;
+        return {
+          ...section,
+          categories: section.categories.map(cat => ({
+            ...cat,
+            items: cat.items.map(item => ({ ...item, status: 'PENDING' }))
+          }))
+        };
+      })
+    }));
     setIsResetModalOpen(false);
   };
 
@@ -386,7 +394,7 @@ const App: React.FC = () => {
                 </div>
               )}
               <button onClick={() => setIsResetModalOpen(true)} className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 text-slate-600 rounded-md text-sm font-medium hover:bg-slate-50 transition-colors">
-                <Trash2 className="w-4 h-4" /> Limpar
+                <Trash2 className="w-4 h-4" /> Limpar Módulo
               </button>
             </div>
           </div>
@@ -402,7 +410,7 @@ const App: React.FC = () => {
           onScroll={handleScroll}
           className="flex-1 overflow-y-auto p-10 scroll-smooth relative"
         >
-          <div className="max-w-6xl mx-auto space-y-8 pb-24">
+          <div className="max-w-screen-2xl mx-auto space-y-8 pb-24">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-white p-4 rounded-lg border border-slate-200">
                {['projectCode', 'designer', 'reviewer'].map((field) => (
                  <div key={field} className="flex items-center px-4 py-2">
@@ -513,9 +521,9 @@ const App: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsResetModalOpen(false)} />
           <div className="relative bg-white rounded-2xl shadow-2xl max-w-sm w-full p-8">
-            <div className="flex items-center gap-4 text-red-500 mb-6"><div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center"><AlertTriangle className="w-6 h-6" /></div><h3 className="text-xl font-bold">Limpar tudo?</h3></div>
-            <p className="text-slate-500 text-sm mb-8 leading-relaxed">Isso apagará todas as marcações e voltará ao padrão original.</p>
-            <div className="flex gap-3"><button onClick={() => setIsResetModalOpen(false)} className="flex-1 py-3 text-sm font-bold text-slate-500 bg-slate-100 rounded-xl">Cancelar</button><button onClick={confirmResetAll} className="flex-1 py-3 text-sm font-bold text-white bg-red-500 rounded-xl shadow-sm">Sim, Limpar</button></div>
+            <div className="flex items-center gap-4 text-amber-500 mb-6"><div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center"><AlertTriangle className="w-6 h-6" /></div><h3 className="text-xl font-bold">Limpar Módulo?</h3></div>
+            <p className="text-slate-500 text-sm mb-8 leading-relaxed">Isso irá resetar o status de todos os itens deste módulo para "Pendente". A estrutura de categorias e itens não será alterada.</p>
+            <div className="flex gap-3"><button onClick={() => setIsResetModalOpen(false)} className="flex-1 py-3 text-sm font-bold text-slate-500 bg-slate-100 rounded-xl">Cancelar</button><button onClick={confirmResetSection} className="flex-1 py-3 text-sm font-bold text-white bg-amber-500 rounded-xl shadow-sm">Sim, Limpar</button></div>
           </div>
         </div>
       )}
