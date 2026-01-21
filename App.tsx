@@ -62,45 +62,46 @@ const SidebarItemUI = React.forwardRef<HTMLDivElement, {
       ref={ref}
       style={style}
       className={`group flex items-center w-full rounded-md transition-all mb-1 ${
-        isActive ? 'bg-[#4e59e1] text-white shadow-sm' : 'hover:bg-slate-100 text-slate-500'
-      } ${isDragging && !isOverlay ? 'opacity-20' : 'opacity-100'} ${
-        isOverlay ? 'shadow-xl bg-white text-slate-800 scale-105 z-[100]' : ''
+        isActive ? 'bg-[#4A55E1] text-white shadow-lg' : 'hover:bg-slate-800 text-slate-400'
+      } ${isDragging && !isOverlay ? 'opacity-30' : 'opacity-100'} ${
+        isOverlay ? 'shadow-2xl bg-slate-900 text-white scale-105 z-[100]' : ''
       }`}
     >
       <div 
         {...attributes} 
         {...listeners}
         className={`p-2.5 cursor-grab active:cursor-grabbing rounded-l-md transition-colors ${
-          isActive ? 'text-white/30 hover:text-white/60' : 'text-slate-300 hover:text-slate-400'
+          isActive ? 'text-white/60 hover:text-white' : 'text-slate-600 hover:text-slate-400'
         }`}
       >
-        <GripVertical className="w-3.5 h-3.5" />
+        <GripVertical className="w-4 h-4" />
       </div>
 
       <button
         onClick={onClick}
-        className={`flex-1 text-left py-2.5 pr-2 text-[10px] font-bold uppercase truncate ${
-          isActive ? 'text-white' : 'group-hover:text-slate-700'
+        className={`flex-1 text-left py-2.5 pr-2 text-sm font-semibold truncate ${
+          isActive ? 'text-white' : 'group-hover:text-slate-300'
         }`}
+        style={{ textShadow: '0 1px 2px rgba(0,0,0,0.1)' }}
       >
         {section.title}
       </button>
 
       {!isOverlay && (
-        <div className="flex items-center opacity-0 group-hover:opacity-100 transition-all pr-1">
+        <div className="flex items-center opacity-0 group-hover:opacity-100 transition-all pr-2">
           <button
             onClick={onDuplicate}
-            className={`p-1.5 rounded-md ${isActive ? 'hover:bg-white/10 text-white' : 'hover:bg-slate-200 text-slate-400'}`}
+            className={`p-1 rounded-md ${isActive ? 'hover:bg-white/10 text-white/70' : 'hover:bg-slate-700 text-slate-500'}`}
             title="Duplicar"
           >
-            <Copy className="w-3 h-3" />
+            <Copy className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={onDelete}
-            className={`p-1.5 rounded-md ${isActive ? 'hover:bg-white/10 text-white' : 'hover:bg-red-50 text-slate-400 hover:text-red-500'}`}
+            className={`p-1 rounded-md ${isActive ? 'hover:bg-white/10 text-white/70' : 'hover:bg-slate-700 text-slate-500 hover:text-red-500'}`}
             title="Excluir"
           >
-            <Trash2 className="w-3 h-3" />
+            <Trash2 className="w-3.5 h-3.5" />
           </button>
         </div>
       )}
@@ -339,10 +340,10 @@ const App: React.FC = () => {
   return (
     <div className="flex h-screen overflow-hidden bg-[#f3f4f6]">
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col shadow-sm z-20">
-        <div className="p-5 border-b border-slate-100 flex justify-between items-center">
-          <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Módulos</span>
-          <button onClick={addSection} className="p-1.5 text-[#4e59e1] hover:bg-indigo-50 rounded-md transition-all">
+      <aside className="w-64 bg-[#1e293b] border-r border-slate-700 flex flex-col shadow-sm z-20">
+        <div className="p-5 border-b border-slate-700 flex justify-between items-center">
+          <span className="text-[10px] font-black uppercase text-slate-300 tracking-wider">MÓDULOS DO PROJETO</span>
+          <button onClick={addSection} className="p-1.5 text-indigo-400 hover:bg-slate-700 rounded-md transition-all">
             <Plus className="w-4 h-4" />
           </button>
         </div>
@@ -366,35 +367,34 @@ const App: React.FC = () => {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden relative">
-        <header className="bg-white border-b border-slate-200 pt-8 pb-4 px-10 shadow-sm z-10">
+        <header className="border-b border-slate-200 pt-8 pb-4 px-10 z-10">
           <div className="flex justify-between items-start mb-6">
             <div className="flex-1 max-w-2xl">
               <input value={state.projectName} onChange={(e) => setState(p => ({ ...p, projectName: e.target.value }))} className="text-2xl font-bold text-slate-800 border-none p-0 focus:ring-0 w-full bg-transparent" placeholder="Nome do Projeto" />
               <div className="flex items-center gap-2 mt-1">
-                <Edit2 className="w-3 h-3 text-[#4e59e1] opacity-40" />
-                <input value={activeSection.title} onChange={(e) => setState(p => ({ ...p, sections: p.sections.map(s => s.id === state.activeSectionId ? { ...s, title: e.target.value } : s) }))} className="text-sm font-bold text-[#4e59e1] uppercase border-none p-0 focus:ring-0 bg-transparent w-full" />
+                <input value={activeSection.title} onChange={(e) => setState(p => ({ ...p, sections: p.sections.map(s => s.id === state.activeSectionId ? { ...s, title: e.target.value } : s) }))} className="text-sm font-medium text-slate-500 border-none p-0 focus:ring-0 bg-transparent w-full" />
               </div>
             </div>
             <div className="flex gap-3 relative" ref={exportMenuRef}>
-              <button onClick={() => setShowExportMenu(!showExportMenu)} className="flex items-center gap-2 px-5 py-2.5 bg-[#10b981] text-white rounded-lg text-sm font-bold hover:bg-[#0da070] transition-colors shadow-sm">
-                <Download className="w-4 h-4" /> Exportar <ChevronDown className={`w-4 h-4 transition-transform ${showExportMenu ? 'rotate-180' : ''}`} />
+              <button onClick={() => setShowExportMenu(!showExportMenu)} className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-md text-sm font-medium hover:bg-green-600 transition-colors shadow-sm">
+                <Download className="w-4 h-4" /> Exportar
               </button>
               {showExportMenu && (
-                <div className="absolute top-full right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-slate-200 py-2 z-50">
-                  <button onClick={() => exportToPDF('active')} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 transition-colors text-left font-bold">Relatório Atual</button>
-                  <button onClick={() => exportToPDF('all')} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 transition-colors text-left font-bold border-t border-slate-50">Relatório Geral</button>
+                <div className="absolute top-full right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-50">
+                  <button onClick={() => exportToPDF('active')} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition-colors text-left">Relatório Atual</button>
+                  <button onClick={() => exportToPDF('all')} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition-colors text-left border-t border-slate-100">Relatório Geral</button>
                 </div>
               )}
-              <button onClick={() => setIsResetModalOpen(true)} className="flex items-center gap-2 px-5 py-2.5 bg-slate-100 text-slate-500 rounded-lg text-sm font-bold hover:bg-red-50 hover:text-red-500 transition-colors">
-                <Trash2 className="w-4 h-4" /> Resetar
+              <button onClick={() => setIsResetModalOpen(true)} className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 text-slate-600 rounded-md text-sm font-medium hover:bg-slate-50 transition-colors">
+                <Trash2 className="w-4 h-4" /> Limpar
               </button>
             </div>
           </div>
-          <div className="space-y-2 mb-2">
-            <div className="flex justify-between items-center text-[10px] font-black uppercase text-slate-400 tracking-wider"><span>Progresso</span><span>{getSectionProgress(activeSection)}%</span></div>
-            <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden"><div className="bg-[#4e59e1] h-full rounded-full transition-all duration-700" style={{ width: `${getSectionProgress(activeSection)}%` }} /></div>
+          <div className="space-y-2 mb-2 pt-6 border-t border-slate-200">
+            <div className="flex justify-between items-center text-[10px] font-black uppercase text-slate-400 tracking-wider"><span>Progresso de Verificação</span><span>{getSectionProgress(activeSection)}%</span></div>
+            <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden"><div className="bg-green-500 h-full rounded-full transition-all duration-700" style={{ width: `${getSectionProgress(activeSection)}%` }} /></div>
+            <div className="flex items-center gap-2 text-[10px] text-slate-400 pt-1"><Save className="w-3 h-3" /><span>Sincronizado automaticamente: {lastSaved}</span></div>
           </div>
-          <div className="flex items-center gap-2 text-[10px] text-slate-400 mt-4"><Save className="w-3 h-3" /><span>Sincronizado: {lastSaved}</span></div>
         </header>
 
         <div 
@@ -403,28 +403,38 @@ const App: React.FC = () => {
           className="flex-1 overflow-y-auto p-10 scroll-smooth relative"
         >
           <div className="max-w-6xl mx-auto space-y-8 pb-24">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-white p-4 rounded-lg border border-slate-200">
                {['projectCode', 'designer', 'reviewer'].map((field) => (
-                 <div key={field} className="bg-white border border-slate-200 rounded-xl flex items-center px-5 py-3 shadow-sm">
-                    <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center mr-4 shrink-0">{field === 'projectCode' ? <FileText className="w-4 h-4 text-indigo-500" /> : <User className="w-4 h-4 text-indigo-500" />}</div>
+                 <div key={field} className="flex items-center px-4 py-2">
+                    <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center mr-4 shrink-0">
+                      {field === 'projectCode' ? <FileText className="w-5 h-5 text-slate-500" /> : <User className="w-5 h-5 text-slate-500" />}
+                    </div>
                     <div className="flex-1">
-                      <p className="text-[9px] font-black uppercase text-slate-400 mb-0.5">{field === 'projectCode' ? 'Código' : field === 'designer' ? 'Projetista' : 'Revisor'}</p>
-                      <input type="text" value={(activeSection as any)[field] || ''} onChange={(e) => setState(p => ({ ...p, sections: p.sections.map(s => s.id === state.activeSectionId ? { ...s, [field]: e.target.value } : s) }))} className="w-full border-none p-0 text-sm font-bold text-slate-700 focus:ring-0 bg-transparent" placeholder="..." />
+                      <p className="text-[9px] font-bold uppercase text-slate-400 mb-0.5">
+                        {field === 'projectCode' ? 'CÓDIGO DO PROJETO' : field === 'designer' ? 'PROJETISTA RESPONSÁVEL' : 'REVISOR / QA'}
+                      </p>
+                      <input
+                        type="text"
+                        value={(activeSection as any)[field] || ''}
+                        onChange={(e) => setState(p => ({ ...p, sections: p.sections.map(s => s.id === state.activeSectionId ? { ...s, [field]: e.target.value } : s) }))}
+                        className="w-full border-none p-0 text-sm font-medium text-slate-700 focus:ring-0 bg-transparent"
+                        placeholder="..."
+                      />
                     </div>
                  </div>
                ))}
             </div>
 
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-              <div className="bg-[#4e59e1] text-white px-10 py-5 flex justify-between items-center">
-                <h2 className="text-xl font-bold uppercase tracking-wider">{activeSection.title}</h2>
-                <button onClick={addCategory} className="opacity-0 hover:opacity-100 flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-[10px] font-bold transition-all uppercase tracking-widest"><Plus className="w-3.5 h-3.5" /> Nova Categoria</button>
+            <div className="bg-transparent rounded-2xl overflow-hidden">
+              <div className="bg-gradient-to-r from-[#4A55E1] to-[#717AFF] text-white px-8 py-4 flex justify-between items-center rounded-lg">
+                <h2 className="text-lg font-bold uppercase tracking-wider">{activeSection.title}</h2>
+                <button onClick={addCategory} className="flex items-center gap-2 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-md text-xs font-bold transition-all uppercase tracking-wider"><Plus className="w-3.5 h-3.5" /> Nova Categoria</button>
               </div>
 
-              <div className="p-10 grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
+              <div className="p-10 grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-10">
                 {activeSection.categories.map(category => (
-                  <div key={category.id} className="space-y-6 group/cat">
-                    <div className="flex justify-between items-center border-b border-indigo-50 pb-3">
+                  <div key={category.id} className="space-y-4 group/cat">
+                    <div className="flex justify-between items-center pb-2">
                       <input value={category.title} onChange={(e) => updateCategoryTitle(category.id, e.target.value)} className="text-base font-bold text-slate-800 bg-transparent border-none p-0 focus:ring-0 w-full" placeholder="Categoria" />
                       <div className="flex gap-1 opacity-0 group-hover/cat:opacity-100 transition-opacity">
                         <button onClick={() => addItem(category.id)} className="p-1 text-indigo-400 hover:bg-indigo-50 rounded"><Plus className="w-4 h-4" /></button>
@@ -432,29 +442,33 @@ const App: React.FC = () => {
                       </div>
                     </div>
                     
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       {category.items.map(item => (
-                        <div key={item.id} className="flex items-center gap-5 group/item py-0.5">
-                          <div className="flex items-center gap-2 shrink-0">
+                        <div key={item.id} className="flex items-center gap-3 group/item">
+                          <label className="flex items-center gap-2 cursor-pointer">
                             <button 
-                              onClick={() => handleStatusChange(activeSection.id, category.id, item.id, 'OK')} 
-                              className={`w-6 h-6 border-2 rounded-md flex items-center justify-center transition-all ${item.status === 'OK' ? 'bg-[#22c55e] border-[#22c55e]' : 'bg-white border-slate-200 hover:border-slate-300'}`}
+                              onClick={() => handleStatusChange(activeSection.id, category.id, item.id, 'OK')}
+                              className={`w-5 h-5 border-2 rounded flex items-center justify-center transition-all ${
+                                item.status === 'OK' ? 'bg-green-500 border-green-500' : 'bg-white border-slate-300 hover:border-slate-400'
+                              }`}
                             >
-                              {item.status === 'OK' && <Check className="w-4 h-4 text-white" strokeWidth={4} />}
+                              {item.status === 'OK' && <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />}
                             </button>
-                            <span className="text-[11px] font-bold text-slate-400 select-none tracking-tight">OK</span>
-                          </div>
+                            <span className="text-xs font-semibold text-slate-500">OK</span>
+                          </label>
 
-                          <div className="flex items-center gap-2 shrink-0">
+                          <label className="flex items-center gap-2 cursor-pointer">
                             <button 
-                              onClick={() => handleStatusChange(activeSection.id, category.id, item.id, 'NA')} 
-                              className={`w-6 h-6 border-2 rounded-md flex items-center justify-center transition-all ${item.status === 'NA' ? 'bg-[#f59e0b] border-[#f59e0b]' : 'bg-white border-slate-200 hover:border-slate-300'}`}
+                              onClick={() => handleStatusChange(activeSection.id, category.id, item.id, 'NA')}
+                              className={`w-5 h-5 border-2 rounded flex items-center justify-center transition-all ${
+                                item.status === 'NA' ? 'bg-amber-500 border-amber-500' : 'bg-white border-slate-300 hover:border-slate-400'
+                              }`}
                             >
-                              {item.status === 'NA' && <Check className="w-4 h-4 text-white" strokeWidth={4} />}
+                              {item.status === 'NA' && <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />}
                             </button>
-                            <span className="text-[11px] font-bold text-slate-400 select-none tracking-tight">N/A</span>
-                          </div>
-                          
+                            <span className="text-xs font-semibold text-slate-500">N/A</span>
+                          </label>
+
                           <div className="flex-1 flex items-center gap-2 overflow-hidden">
                             <textarea 
                               rows={1}
@@ -485,7 +499,7 @@ const App: React.FC = () => {
           {showScrollTop && (
             <button 
               onClick={scrollToTop} 
-              className="fixed bottom-10 right-10 w-12 h-12 bg-[#4e59e1] text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 animate-bounce-subtle"
+              className="fixed bottom-10 right-10 w-12 h-12 bg-[#4A55E1] text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 animate-bounce-subtle"
               title="Voltar ao topo"
             >
               <ArrowUp className="w-6 h-6" />
