@@ -19,7 +19,7 @@ export const INITIAL_SECTIONS: ChecklistSection[] = [
       {
         id: 'pre-pilares',
         title: 'Pilares',
-        items: createItems(['Dimensão', 'Numeração', 'Variação de seção', 'Nasce/Segue/Morre', 'Interferência na arq'])
+        items: createItems(['Dimensão', 'Numeração', 'Variação de seção', 'Nasce/Segue/Morre', 'Simetria nos pilares', 'Interferência na arquitetura'])
       },
       {
         id: 'pre-vigas',
