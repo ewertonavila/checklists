@@ -322,21 +322,110 @@ const App: React.FC = () => {
   const exportToPDF = (type: 'active' | 'all') => {
     const doc = new jsPDF();
     const sectionsToExport = type === 'active' ? [activeSection] : state.sections;
+
     sectionsToExport.forEach((section, index) => {
-      if (index > 0) doc.addPage();
-      doc.setFontSize(20); doc.setTextColor(78, 89, 225); doc.text(state.projectName, 14, 20);
-      doc.setFontSize(10); doc.setTextColor(100); doc.text(`Progresso: ${getSectionProgress(section)}%`, 160, 26);
-      doc.setFontSize(14); doc.setTextColor(60); doc.text(section.title.toUpperCase(), 14, 44);
-      const tableData: any[] = [];
-      section.categories.forEach(cat => {
-        tableData.push([{ content: cat.title, colSpan: 2, styles: { fillColor: [245, 247, 255], textColor: [78, 89, 225], fontStyle: 'bold' } }]);
-        cat.items.forEach(item => {
-          tableData.push([item.label, item.status === 'OK' ? 'OK' : item.status === 'NA' ? 'N/A' : 'Pendente']);
+        if (index > 0) doc.addPage();
+
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageMargins = { top: 20, right: 20, bottom: 20, left: 20 };
+        let finalY = pageMargins.top;
+
+        // Título Principal
+        doc.setFontSize(18);
+        doc.setFont('helvetica', 'bold');
+        const title = `Checklist: ${section.title}`;
+        const titleWidth = doc.getTextWidth(title);
+        doc.text(title, (pageWidth - titleWidth) / 2, finalY);
+        finalY += 15;
+
+        // Metadados
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'normal');
+        const metaCol1X = pageMargins.left;
+        const metaCol2X = pageMargins.left + 80;
+
+        const projectCode = section.projectCode || 'Não informado';
+        const designer = section.designer || 'Não informado';
+        const reviewer = section.reviewer || 'Não informado';
+        const today = new Date().toLocaleDateString('pt-BR');
+
+        doc.setFont('helvetica', 'bold');
+        doc.text('Projeto:', metaCol1X, finalY);
+        doc.setFont('helvetica', 'normal');
+        doc.text(projectCode, metaCol1X + 20, finalY);
+
+        doc.setFont('helvetica', 'bold');
+        doc.text('Revisor:', metaCol2X, finalY);
+        doc.setFont('helvetica', 'normal');
+        doc.text(reviewer, metaCol2X + 20, finalY);
+        finalY += 7;
+
+        doc.setFont('helvetica', 'bold');
+        doc.text('Projetista:', metaCol1X, finalY);
+        doc.setFont('helvetica', 'normal');
+        doc.text(designer, metaCol1X + 20, finalY);
+        finalY += 7;
+
+        doc.setFont('helvetica', 'bold');
+        doc.text('Data:', metaCol1X, finalY);
+        doc.setFont('helvetica', 'normal');
+        doc.text(today, metaCol1X + 20, finalY);
+        finalY += 15;
+
+        // Progresso
+        const allItems = section.categories.flatMap(c => c.items);
+        const completedItems = allItems.filter(i => i.status !== 'PENDING').length;
+        const progress = allItems.length > 0 ? Math.round((completedItems / allItems.length) * 100) : 0;
+        const progressText = `Progresso da Categoria: ${progress}% (${completedItems}/${allItems.length} itens)`;
+
+        doc.setFont('helvetica', 'bold');
+        doc.text(progressText, metaCol1X, finalY);
+        finalY += 5;
+
+        // Header da Seção
+        autoTable(doc, {
+            body: [[{ content: section.title, styles: { fontStyle: 'bold', textColor: 255 } }]],
+            startY: finalY,
+            theme: 'plain',
+            styles: {
+                fillColor: [41, 54, 80], // Cor de fundo azul escuro
+                cellPadding: 3,
+            },
         });
-      });
-      autoTable(doc, { startY: 48, head: [['Item', 'Status']], body: tableData, theme: 'grid', headStyles: { fillColor: [78, 89, 225] } });
+        finalY = (doc as any).lastAutoTable.finalY;
+
+        // Tabelas de Categorias
+        section.categories.forEach(category => {
+            const tableData = category.items.map(item => {
+                const statusText = item.status === 'OK' ? 'OK' : item.status === 'NA' ? 'N/A' : 'Pendente';
+                return [item.label, statusText];
+            });
+
+            autoTable(doc, {
+                head: [[category.title, 'Status']],
+                body: tableData,
+                startY: finalY,
+                theme: 'grid',
+                headStyles: {
+                    fillColor: [59, 130, 246], // Cor de fundo azul claro
+                    textColor: 255,
+                    fontStyle: 'bold',
+                },
+                columnStyles: {
+                    1: { halign: 'center' },
+                },
+                didParseCell: (data) => {
+                    if (data.section === 'body' && data.column.index === 1) {
+                        data.cell.styles.fillColor = '#E5E7EB'; // Cinza claro
+                        data.cell.styles.textColor = '#374151'; // Cinza escuro
+                    }
+                },
+            });
+            finalY = (doc as any).lastAutoTable.finalY + 5; // Adiciona espaço entre as tabelas
+        });
     });
-    doc.save(`${state.projectName.replace(/\s+/g, '_')}.pdf`);
+
+    doc.save(`${state.projectName.replace(/\s+/g, '_')}_Relatorio.pdf`);
     setShowExportMenu(false);
   };
 
