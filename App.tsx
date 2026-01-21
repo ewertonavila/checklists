@@ -148,6 +148,7 @@ const App: React.FC = () => {
   });
 
   const [lastSaved, setLastSaved] = useState<string>('');
+  const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -162,8 +163,14 @@ const App: React.FC = () => {
   );
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    setLastSaved(new Date().toLocaleTimeString('pt-BR'));
+    const timer = setTimeout(() => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      setLastSaved(new Date().toLocaleTimeString('pt-BR'));
+      setShowSaveConfirmation(true);
+      setTimeout(() => setShowSaveConfirmation(false), 2000); // Oculta após 2 segundos
+    }, 500); // Debounce de 500ms
+
+    return () => clearTimeout(timer);
   }, [state]);
 
   const activeSection = useMemo(() => {
@@ -401,7 +408,16 @@ const App: React.FC = () => {
           <div className="space-y-2 mb-2 pt-6 border-t border-slate-200">
             <div className="flex justify-between items-center text-[10px] font-black uppercase text-slate-400 tracking-wider"><span>Progresso de Verificação</span><span>{getSectionProgress(activeSection)}%</span></div>
             <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden"><div className="bg-green-500 h-full rounded-full transition-all duration-700" style={{ width: `${getSectionProgress(activeSection)}%` }} /></div>
-            <div className="flex items-center gap-2 text-[10px] text-slate-400 pt-1"><Save className="w-3 h-3" /><span>Sincronizado automaticamente: {lastSaved}</span></div>
+            <div className="flex items-center gap-2 text-[10px] text-slate-400 pt-1 relative h-4">
+              <div className={`absolute left-0 top-0 flex items-center gap-2 transition-opacity duration-500 ${showSaveConfirmation ? 'opacity-0' : 'opacity-100'}`}>
+                <Save className="w-3 h-3" />
+                <span>Sincronizado automaticamente: {lastSaved}</span>
+              </div>
+              <div className={`absolute left-0 top-0 flex items-center gap-2 text-green-500 transition-opacity duration-500 ${showSaveConfirmation ? 'opacity-100' : 'opacity-0'}`}>
+                <Check className="w-3 h-3" />
+                <span>Salvo!</span>
+              </div>
+            </div>
           </div>
         </header>
 
@@ -504,15 +520,13 @@ const App: React.FC = () => {
           </div>
           
           {/* Botão flutuante Voltar ao Topo */}
-          {showScrollTop && (
-            <button 
-              onClick={scrollToTop} 
-              className="fixed bottom-10 right-10 w-12 h-12 bg-[#4A55E1] text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 animate-bounce-subtle"
-              title="Voltar ao topo"
-            >
-              <ArrowUp className="w-6 h-6" />
-            </button>
-          )}
+          <button
+            onClick={scrollToTop}
+            className={`fixed bottom-10 right-10 w-12 h-12 bg-[#4A55E1] text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 duration-300 ${showScrollTop ? 'opacity-100 scale-100' : 'opacity-0 scale-90 pointer-events-none'}`}
+            title="Voltar ao topo"
+          >
+            <ArrowUp className="w-6 h-6" />
+          </button>
         </div>
       </main>
 
